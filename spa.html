@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>SPA Demo Site - VWO Test</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f5f5f5;
+    }
+
+    header, nav, footer {
+      background: #333;
+      color: white;
+      padding: 15px;
+      text-align: center;
+    }
+
+    nav a {
+      margin: 0 15px;
+      color: #0ff;
+      text-decoration: none;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    main {
+      padding: 30px;
+      max-width: 800px;
+      margin: auto;
+      background: white;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>SPA Demo Site for VWO</h1>
+    <p>Testing VWO campaigns on Single Page App</p>
+  </header>
+
+  <nav>
+    <a data-link href="/home">Home</a>
+    <a data-link href="/about">About</a>
+  </nav>
+
+  <main id="app">
+    <!-- Content will be injected here -->
+  </main>
+
+  <footer>
+    &copy; 2025 SPA Demo
+  </footer>
+
+  <script>
+    const routes = {
+      "/home": `
+        <h2>Welcome to the Home Page</h2>
+        <p>This is the homepage of our simple SPA.</p>
+        <button id="home-button">Click Me</button>
+      `,
+      "/about": `
+        <h2>About Our Company</h2>
+        <p>This is the about page. Use this route for VWO testing!</p>
+        <button id="about-button">Learn More</button>
+      `
+    };
+
+    function navigate(path) {
+      history.pushState({}, "", path);
+      renderRoute(path);
+      notifyVWORouteChanged(); // 🔥 Important for VWO
+    }
+
+    function renderRoute(path) {
+      const content = routes[path] || "<h2>404 - Page Not Found</h2>";
+      document.getElementById("app").innerHTML = content;
+    }
+
+    function notifyVWORouteChanged() {
+      if (window._vwo_evq) {
+        window._vwo_evq.push({ event: "urlChanged" });
+      } else {
+        window._vwo_evq = [{ event: "urlChanged" }];
+      }
+    }
+
+    // Initial render
+    renderRoute(location.pathname);
+
+    // Listen for back/forward navigation
+    window.addEventListener("popstate", () => {
+      renderRoute(location.pathname);
+      notifyVWORouteChanged();
+    });
+
+    // Link click handling (no full reload)
+    document.querySelectorAll("[data-link]").forEach(link => {
+      link.addEventListener("click", e => {
+        e.preventDefault();
+        const href = link.getAttribute("href");
+        navigate(href);
+      });
+    });
+  </script>
+
+  <!-- Optional: Add VWO SmartCode here -->
+  <!-- <script type="text/javascript" src="https://dev.visualwebsiteoptimizer.com/j.php?a=XXXXX&u=YOURDOMAIN"></script> -->
+
+</body>
+</html>
