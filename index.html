@@ -4,11 +4,15 @@ f<!DOCTYPE html>
 <!-- Start Wingify Async SmartCode -->
 <link rel="preconnect" href="https://edge.wingify.net"/>
 <script type='text/javascript'>
+  const params = new URLSearchParams(window.location.search);
+ const accId = parseInt(params.get("id"));
+ const accountId = accId || 1247268;
+ console.log("Account-Id ->", accountId)
 window._wingify_code ||
 (function () {
 var w=window,
 d=document;
-var account_id=3001796,
+var account_id=accountId,
 version=2.2,
 settings_tolerance=2000,
 hide_element='body',
